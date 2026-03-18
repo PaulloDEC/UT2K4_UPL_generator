@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UT2004 UPL Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg: #0b0e12;
+  --surface: #12161c;
+  --panel: #161b22;
+  --border: #263041;
+
+  --accent: #e8a020;
+
+  --text: #e6edf3;
+  --text-dim: #9fb0c3;
+  --text-muted: #6b7c8f;
+
+  --input-bg: #0f141a;
+  --input-border: #2a3444;
+
+  --danger: #d04a3a;
+  --success: #2fb36c;
+}
+
+/* Base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Layout */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header-eyebrow {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0;
+}
+
+h1 span {
+  color: var(--text);
+}
+
+.header-sub {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Sections */
+.section {
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.section-header {
+  background: var(--panel);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.section-body {
+  background: var(--surface);
+  padding: 18px;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.form-grid.triple {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+label .required {
+  color: var(--accent);
+}
+
+label .hint {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  outline: none;
+  font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  min-height: 120px;
+}
+
+/* Stat grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat-range-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Button */
+.generate-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  color: #000;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.generate-btn:hover {
+  opacity: 0.9;
+}
+
+/* Output */
+.output-box {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: none;
+}
+
+.output-box.visible {
+  display: block;
+}
+
+.output-toolbar {
+  background: var(--panel);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.output-label {
+  font-size: 13px;
+  color: var(--success);
+}
+
+.btn-small {
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-small:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#output-text {
+  width: 100%;
+  padding: 14px;
+  background: #0b0f14;
+  border: none;
+  color: #9be870;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Error */
+.error-msg {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(208, 74, 58, 0.1);
+  border: 1px solid rgba(208, 74, 58, 0.3);
+  color: var(--danger);
+  font-size: 14px;
+  display: none;
+}
+
+.error-msg.visible {
+  display: block;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-grid,
+  .form-grid.triple {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-eyebrow">Unreal Tournament 2004</div>
+    <h1>UPL <span>Generator</span></h1>
+    <div class="divider"><span class="divider-icon">◆ ◆ ◆</span></div>
+    <p class="header-sub">Player Character Definition File Builder</p>
+  </header>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">Character Identity</span>
+    </div>
+    <div class="section-body">
+      <p style="color: var(--accent2); font-size: 11px; margin-bottom: 15px; letter-spacing: 0.05em;">FIELDS MARKED WITH AN ASTERISK (*) ARE MANDATORY FOR ENGINE STABILITY.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Default Name <span class="required">*</span></label>
+          <input type="text" id="f-name" placeholder="e.g. " />
+        </div>
+        <div class="field">
+          <label>Race</label>
+          <select id="f-race">
+            <option value="">— select —</option>
+            <option value="Human">Human</option>
+            <option value="Mercenary">Mercenary</option>
+            <option value="Juggernaut">Juggernaut</option>
+            <option value="Robot">Robot</option>
+            <option value="Gen Mo'Kai">Gen Mo'Kai</option>
+            <option value="Skaarj">Skaarj</option>
+            <option value="Egyptian">Egyptian</option>
+            <option value="Nightmare">Nightmare</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Sex <span class="required">*</span></label>
+          <select id="f-sex">
+            <option value="">— select —</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Bot Use <span class="required">*</span> <span class="hint">1 = multiplayer, SP = singleplayer</span></label>
+          <input type="text" id="f-botuse" placeholder="1" value="1" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Asset References</span>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+        <div class="field">
+          <label>Mesh <span class="required">*</span> <span class="hint">Package.ObjectName</span></label>
+          <input type="text" id="f-mesh" placeholder="e.g. charactername.meshname" />
+        </div>
+        <div class="field">
+          <label>Skeleton</label>
+          <select id="f-skeleton">
+            <option value="">— select —</option>
+            <option value="UT2k4Charger.Skeleton">UT2k4Charger.Skeleton (Standard humanoid)</option>
+            <option value="SkaarjPack.SkaarjAnim">SkaarjPack.SkaarjAnim (Skaarj models)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Body Skin <span class="required">*</span> <span class="hint">Package.ObjectName</span></label>
+          <input type="text" id="f-bodyskin" placeholder="e.g. charactername.bodytexture" />
+        </div>
+        <div class="field">
+          <label>Face Skin <span class="required">*</span> <span class="hint">Package.ObjectName</span></label>
+          <input type="text" id="f-faceskin" placeholder="e.g. charactername.headtexture" />
+        </div>
+        <div class="field">
+          <label>Portrait <span class="required">*</span> <span class="hint">Package.ObjectName</span></label>
+          <input type="text" id="f-portrait" placeholder="e.g. charactername.portraittexture" />
+        </div>
+        <div class="field">
+          <label>Ragdoll <span class="required">*</span></label>
+          <select id="f-ragdoll">
+            <option value="">— select —</option>
+            <option value="Male1">Male1</option>
+            <option value="Female1">Female1</option>
+            <option value="Jugg1">Jugg1</option>
+            <option value="Alien">Alien</option>
+            <option value="Bot">Bot</option>
+            <option value="Skaarj">Skaarj</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Species <span class="required">*</span></label>
+          <select id="f-species">
+            <option value="">— select —</option>
+            <option value="xGame.SPECIES_Human">Human (xGame.SPECIES_Human)</option>
+            <option value="xGame.SPECIES_Egypt">Egyptian (xGame.SPECIES_Egypt)</option>
+            <option value="xGame.SPECIES_Mercenary">Mercenary (xGame.SPECIES_Mercenary)</option>
+            <option value="xGame.SPECIES_Nightmare">Nightmare (xGame.SPECIES_Nightmare)</option>
+            <option value="xGame.SPECIES_Alien">Alien (xGame.SPECIES_Alien)</option>
+            <option value="xGame.SPECIES_Robot">Robot (xGame.SPECIES_Robot)</option>
+            <option value="xGame.SPECIES_Juggernaut">Juggernaut (xGame.SPECIES_Juggernaut)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Voice Pack</label>
+          <select id="f-voice">
+            <option value="">— select —</option>
+            <optgroup label="Male">
+              <option value="xGame.VoiceMaleOne">Male 1</option>
+              <option value="xGame.VoiceMaleTwo">Male 2</option>
+              <option value="xGame.VoiceMaleThree">Male 3</option>
+              <option value="xGame.VoiceMaleFour">Male 4</option>
+              <option value="xGame.VoiceMaleFive">Male 5</option>
+              <option value="xGame.VoiceMaleSix">Male 6</option>
+              <option value="xGame.VoiceMaleSeven">Male 7</option>
+              <option value="xGame.VoiceMaleEight">Male 8</option>
+            </optgroup>
+            <optgroup label="Female">
+              <option value="xGame.VoiceFemaleOne">Female 1</option>
+              <option value="xGame.VoiceFemaleTwo">Female 2</option>
+              <option value="xGame.VoiceFemaleThree">Female 3</option>
+              <option value="xGame.VoiceFemaleFour">Female 4</option>
+            </optgroup>
+            <optgroup label="Specialty">
+              <option value="xGame.VoiceRobotOne">Robot</option>
+              <option value="xGame.VoiceAlienOne">Alien</option>
+              <option value="xGame.VoiceJuggMaleOne">Juggernaut Male</option>
+              <option value="xGame.VoiceJuggFemaleOne">Juggernaut Female</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">Combat Profile</span>
+    </div>
+    <div class="section-body">
+      <div class="field" style="margin-bottom:18px;">
+        <label>Favorite Weapon</label>
+        <select id="f-weapon">
+          <option value="">— select —</option>
+          <option value="XWeapons.ShieldGun">Shield Gun</option>
+          <option value="XWeapons.AssaultRifle">Assault Rifle</option>
+          <option value="XWeapons.BioRifle">Bio Rifle</option>
+          <option value="XWeapons.ShockRifle">Shock Rifle</option>
+          <option value="XWeapons.LinkGun">Link Gun</option>
+          <option value="XWeapons.Minigun">Minigun</option>
+          <option value="XWeapons.FlakCannon">Flak Cannon</option>
+          <option value="XWeapons.RocketLauncher">Rocket Launcher</option>
+          <option value="XWeapons.SniperRifle">Lightning Gun</option>
+          <option value="XWeapons.ClassicSniperRifle">Classic Sniper Rifle</option>
+          <option value="Onslaught.ONSAVRiL">AVRiL (Onslaught)</option>
+          <option value="Onslaught.ONSMineLayer">Mine Layer (Onslaught)</option>
+          <option value="Onslaught.ONSGrenadeLauncher">Grenade Launcher (Onslaught)</option>
+          <option value="XWeapons.Redeemer">Redeemer</option>
+          <option value="XWeapons.Painter">Ion Painter</option>
+        </select>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-field">
+          <label>Aggressiveness</label>
+          <input type="number" id="f-aggressiveness" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Accuracy</label>
+          <input type="number" id="f-accuracy" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Combat Style</label>
+          <input type="number" id="f-combatstyle" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Tactics</label>
+          <input type="number" id="f-tactics" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Strafing Ability</label>
+          <input type="number" id="f-strafing" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Jumpiness</label>
+          <input type="number" id="f-jumpiness" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">Range: -2.0 to +2.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">Character Bio / Description</span>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Bio Text <span class="hint">Each line becomes a | separator in the file</span></label>
+        <textarea id="f-text" placeholder="Enter the character bio here.
+Each new line will become a paragraph break in-game.
+You can write naturally — the formatting is handled automatically."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="output-section">
+    <button class="generate-btn" onclick="generate()">⬛ Generate UPL File</button>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="output-box" id="output-box">
+      <div class="output-toolbar">
+        <span class="output-label">✓ Output Ready</span>
+        <div class="output-actions">
+          <button class="btn-small" onclick="copyText()">Copy</button>
+          <button class="btn-small primary" onclick="downloadFile()">Download .upl</button>
+        </div>
+      </div>
+      <textarea id="output-text" readonly rows="6" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <footer>UT2004 UPL GENERATOR &nbsp;◆&nbsp; DROP INTO UT2004\SYSTEM\</footer>
+
+</div>
+
+<script>
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function fmtNum(n) {
+    const num = parseFloat(n);
+    if (isNaN(num)) return '+0.0';
+    const sign = num >= 0 ? '+' : '';
+    return sign + num.toFixed(1);
+  }
+
+  function bioToUpl(text) {
+    return text
+      .split('\n')
+      .map(l => l.trimEnd())
+      .join('|')
+      .replace(/\|{2,}/g, '||')
+      + '|';
+  }
+
+  function generate() {
+    const errorEl = document.getElementById('error-msg');
+    const outputBox = document.getElementById('output-box');
+    errorEl.classList.remove('visible');
+    outputBox.classList.remove('visible');
+
+    // Validation Check for Mandatory Fields
+    const required = [
+      { id: 'f-name', label: 'Default Name' },
+      { id: 'f-mesh', label: 'Mesh' },
+      { id: 'f-species', label: 'Species' },
+      { id: 'f-bodyskin', label: 'Body Skin' },
+      { id: 'f-faceskin', label: 'Face Skin' },
+      { id: 'f-portrait', label: 'Portrait' },
+      { id: 'f-sex', label: 'Sex' },
+      { id: 'f-botuse', label: 'Bot Use' },
+      { id: 'f-ragdoll', label: 'Ragdoll' }
+    ];
+
+    let missing = [];
+    required.forEach(field => {
+      if (!val(field.id)) missing.push(field.label);
+    });
+
+    if (missing.length > 0) {
+      errorEl.innerHTML = `CRITICAL ERROR: MISSING REQUIRED DATA<br>Please fill in: ${missing.join(', ')}`;
+      errorEl.classList.add('visible');
+      errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    const parts = [];
+
+    parts.push(`DefaultName="${val('f-name')}"`);
+
+    const race = val('f-race');
+    if (race) parts.push(`Race="${race}"`);
+
+    parts.push(`Mesh=${val('f-mesh')}`);
+    parts.push(`species=${val('f-species')}`);
+    parts.push(`BodySkin=${val('f-bodyskin')}`);
+    parts.push(`FaceSkin=${val('f-faceskin')}`);
+    parts.push(`Portrait=${val('f-portrait')}`);
+
+    const bioRaw = document.getElementById('f-text').value;
+    if (bioRaw.trim()) {
+      parts.push(`Text="${bioToUpl(bioRaw)}"`);
+    }
+
+    const voice = val('f-voice');
+    if (voice) parts.push(`Voice=${voice}`);
+
+    // Engine requires M/F single character
+    const sexVal = val('f-sex');
+    parts.push(`Sex=${sexVal === 'Male' ? 'M' : 'F'}`);
+
+    const weapon = val('f-weapon');
+    if (weapon) parts.push(`FavoriteWeapon=${weapon}`);
+
+    parts.push(`Aggressiveness=${fmtNum(val('f-aggressiveness'))}`);
+    parts.push(`CombatStyle=${fmtNum(val('f-combatstyle'))}`);
+    parts.push(`Jumpiness=${fmtNum(val('f-jumpiness'))}`);
+    parts.push(`Tactics=${fmtNum(val('f-tactics'))}`);
+    parts.push(`Accuracy=${fmtNum(val('f-accuracy'))}`);
+    parts.push(`StrafingAbility=${fmtNum(val('f-strafing'))}`);
+
+    parts.push(`Ragdoll=${val('f-ragdoll')}`);
+
+    const skeleton = val('f-skeleton');
+    if (skeleton) parts.push(`Skeleton=${skeleton}`);
+
+    parts.push(`BotUse=${val('f-botuse')}`);
+
+    // Header changed to [Characters] for standard UPL files
+    const line = `[Public]\r\nPlayer=(${parts.join(',')})`;
+
+    document.getElementById('output-text').value = line;
+    outputBox.classList.add('visible');
+    outputBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function copyText() {
+    const t = document.getElementById('output-text');
+    t.select();
+    navigator.clipboard.writeText(t.value).catch(() => {
+      document.execCommand('copy');
+    });
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--success)';
+    btn.style.borderColor = 'var(--success)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  }
+
+  function downloadFile() {
+    const content = document.getElementById('output-text').value;
+    const name = (document.getElementById('f-name').value.trim() || 'character').replace(/\s+/g, '');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${name}.upl`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.getElementById('f-text').addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = this.selectionStart;
+      this.value = this.value.substring(0, s) + '    ' + this.value.substring(this.selectionEnd);
+      this.selectionStart = this.selectionEnd = s + 4;
+    }
+  });
+</script>
+</body>
+</html>

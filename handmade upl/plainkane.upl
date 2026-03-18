@@ -1,0 +1,2 @@
+[Public]
+Player=(DefaultName="Plain Kane",Mesh=plainkane_anim.plainkane,species=xGame.SPECIES_Merc,BodySkin=plainkane_texture.plainkane_body,FaceSkin=plainkane_texture.plainkane_head,Portrait=plainkane_texture.plainkane_portrait,Text="Look out everyone, it's Plain Kane!",Sex=male,Menu="SP",Ragdoll=Male)
