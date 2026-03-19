@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UT2004 UPL Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg: #0b0e12;
+  --surface: #12161c;
+  --panel: #161b22;
+  --border: #263041;
+
+  --accent: #e8a020;
+
+  --text: #e6edf3;
+  --text-dim: #9fb0c3;
+  --text-muted: #6b7c8f;
+
+  --input-bg: #0f141a;
+  --input-border: #2a3444;
+
+  --danger: #d04a3a;
+  --success: #2fb36c;
+}
+
+/* Base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Layout */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.15) 0px,
+    rgba(0,0,0,0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.header-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: #c05010;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 5vw, 38px);
+  color: #e8a020;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 30px rgba(232, 160, 32, 0.4),
+    0 0 60px rgba(232, 160, 32, 0.1);
+  margin: 0;
+}
+
+h1 span {
+  color: var(--text);
+}
+
+.header-sub {
+  margin-top: 10px;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.divider-icon {
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+.section-header {
+  background: var(--panel);
+  padding: 10px 20px 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-number {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(232,160,32,0.1);
+  border: 1px solid rgba(232,160,32,0.3);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-body {
+  background: var(--surface);
+  padding: 18px 20px 20px 24px;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.form-grid.triple {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+label .required {
+  color: var(--accent);
+}
+
+label .hint {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  outline: none;
+  font-family: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px rgba(232,160,32,0.4),
+    0 0 6px rgba(232,160,32,0.2);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Stat grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-range-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Toggle row (for text mode / voice mode) */
+.toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.toggle-btn {
+  font-size: 12px;
+  padding: 5px 14px;
+  border: 1px solid var(--input-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(232,160,32,0.08);
+}
+
+/* Generate button */
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #c05010, #e8a020);
+  border: none;
+  color: #000;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.generate-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  pointer-events: none;
+}
+
+.generate-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4) inset;
+}
+
+/* Output */
+.output-section {
+  margin-top: 20px;
+}
+
+.output-box {
+  margin-top: 20px;
+  background: #060810;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.output-box.visible {
+  display: block;
+}
+
+.output-toolbar {
+  background: var(--panel);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.output-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--success);
+  text-transform: uppercase;
+}
+
+.output-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-small {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 2px;
+  letter-spacing: 0.1em;
+  transition: all 0.15s ease;
+}
+
+.btn-small:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-small.primary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-small.primary:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+#output-text {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.25) 0px,
+    rgba(0,0,0,0.25) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  border: none;
+  color: #8fd050;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+}
+
+/* Error */
+.error-msg {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(208, 74, 58, 0.1);
+  border: 1px solid rgba(208, 74, 58, 0.3);
+  color: var(--danger);
+  font-size: 14px;
+  display: none;
+  border-radius: 2px;
+}
+
+.error-msg.visible {
+  display: block;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Mandatory note */
+.mandatory-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 15px;
+  letter-spacing: 0.05em;
+}
+
+.mandatory-note span {
+  color: var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-grid,
+  .form-grid.triple {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-eyebrow">Unreal Tournament 2004</div>
+    <h1>UPL <span>Generator</span></h1>
+    <div class="divider"><span class="divider-icon">◆ ◆ ◆</span></div>
+    <p class="header-sub">Player Character Definition File Builder</p>
+  </header>
+
+  <!-- Section 01: Character Identity -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">Character Identity</span>
+    </div>
+    <div class="section-body">
+      <p class="mandatory-note">Fields marked <span>*</span> are mandatory.</p>
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Default Name <span class="required">*</span>
+            <span class="hint">How your character is identified in-game</span>
+          </label>
+          <input type="text" id="f-name" placeholder="e.g. John Smith" />
+        </div>
+
+        <div class="field">
+          <label>Race
+            <span class="hint">Which race group your character belongs to</span>
+          </label>
+          <select id="f-race">
+            <option value="">— select —</option>
+            <optgroup label="Standard">
+              <option value="MERCENARY">Mercenary (Human)</option>
+              <option value="EGYPTIAN">Egyptian (Anuban)</option>
+              <option value="JUGGERNAUT">Juggernaut</option>
+              <option value="GEN MO'KAI">Gen Mo'Kai</option>
+              <option value="ROBOT">Robot</option>
+              <option value="NIGHTMARE">Nightmare</option>
+            </optgroup>
+            <optgroup label="UT2004">
+              <option value="SKAARJ">Skaarj</option>
+              <option value="CYBERNETIC">Cybernetic</option>
+              <option value="THUNDERCRASH">ThunderCrash</option>
+              <option value="HELLIONS">Hellions</option>
+            </optgroup>
+            <optgroup label="UT2004 ECE">
+              <option value="METALGUARD">MetalGuard</option>
+              <option value="NECRIS">Necris</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Sex <span class="required">*</span>
+            <span class="hint">Used in death messages and voice assignment</span>
+          </label>
+          <select id="f-sex">
+            <option value="">— select —</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Menu
+            <span class="hint">Controls availability in character select &amp; bot roster</span>
+          </label>
+          <select id="f-menu">
+            <option value="">— select —</option>
+            <option value="SP">SP — selectable player &amp; hireable bot</option>
+            <option value="DUP">DUP — hidden from menus entirely</option>
+            <option value="MALCOLM">MALCOLM — unlockable final boss</option>
+            <option value="CLANLORD">CLANLORD — unlockable final boss</option>
+            <option value="XAN">XAN — unlockable final boss</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 02: Asset References -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Asset References</span>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Mesh <span class="required">*</span>
+            <span class="hint">Where to find your character's mesh</span>
+          </label>
+          <input type="text" id="f-mesh" placeholder="e.g. PackageName.Mesh" />
+        </div>
+
+        <div class="field">
+          <label>Skeleton
+            <span class="hint">Which animation skeleton your mesh uses</span>
+          </label>
+          <select id="f-skeleton">
+            <option value="">— select —</option>
+            <option value="UT2k4Charger.Skeleton">UT2k4Charger.Skeleton — standard humanoid</option>
+            <option value="SkaarjPack.SkaarjAnim">SkaarjPack.SkaarjAnim — Skaarj models</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Body Skin <span class="required">*</span>
+            <span class="hint">Where to find your character's body texture</span>
+          </label>
+          <input type="text" id="f-bodyskin" placeholder="e.g. PackageName.BodyTexture" />
+        </div>
+
+        <div class="field">
+          <label>Face Skin <span class="required">*</span>
+            <span class="hint">Where to find your character's face texture</span>
+          </label>
+          <input type="text" id="f-faceskin" placeholder="e.g. PackageName.FaceTexture" />
+        </div>
+
+        <div class="field">
+          <label>Portrait <span class="required">*</span>
+            <span class="hint">Where to find your character's portrait image</span>
+          </label>
+          <input type="text" id="f-portrait" placeholder="e.g. PackageName.PortraitTexture" />
+        </div>
+
+        <div class="field">
+          <label>Ragdoll
+            <span class="hint">Use traditional death animations rather than ragdoll physics</span>
+          </label>
+          <select id="f-ragdoll">
+            <option value="">— select —</option>
+            <option value="Male1">Male1</option>
+            <option value="Female1">Female1</option>
+            <option value="Jugg1">Jugg1</option>
+            <option value="Alien">Alien</option>
+            <option value="Bot">Bot</option>
+            <option value="Skaarj">Skaarj</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Species <span class="required">*</span>
+            <span class="hint">Affects blood colour, hit sounds, gib types &amp; species mutator stats</span>
+          </label>
+          <select id="f-species">
+            <option value="">— select —</option>
+            <option value="xGame.SPECIES_Merc">xGame.SPECIES_Merc — Mercenary, Hellions etc</option>
+            <option value="xGame.SPECIES_Egypt">xGame.SPECIES_Egypt — Egyptian</option>
+            <option value="xGame.SPECIES_Jugg">xGame.SPECIES_Jugg — Juggernaut</option>
+            <option value="xGame.SPECIES_Alien">xGame.SPECIES_Alien — Gen Mo'Kai</option>
+            <option value="xGame.SPECIES_Bot">xGame.SPECIES_Bot — Robot, Cybernetic</option>
+            <option value="xGame.SPECIES_Night">xGame.SPECIES_Night — Nightmare, Abaddon</option>
+            <option value="xGame.SPECIESSkaarj">xGame.SPECIESSkaarj — Skaarj</option>
+          </select>
+        </div>
+
+        <!-- Voice field with toggle -->
+        <div class="field">
+          <label>Voice Pack
+            <span class="hint">Built-in voice or custom package reference</span>
+          </label>
+          <div style="display:flex; gap:8px; align-items:stretch;">
+            <div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">
+              <button type="button" class="toggle-btn active" id="voice-tab-builtin" onclick="setVoiceMode('builtin')">Built-in</button>
+              <button type="button" class="toggle-btn" id="voice-tab-custom" onclick="setVoiceMode('custom')">Custom</button>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div id="voice-builtin" style="height:100%;">
+                <select id="f-voice-builtin" style="height:100%; width:100%;">
+                  <option value="">— select —</option>
+                  <optgroup label="Male">
+                    <option value="xGame.VoiceMaleOne">Male 1</option>
+                    <option value="xGame.VoiceMaleTwo">Male 2</option>
+                    <option value="xGame.VoiceMaleThree">Male 3</option>
+                    <option value="xGame.VoiceMaleFour">Male 4</option>
+                    <option value="xGame.VoiceMaleFive">Male 5</option>
+                    <option value="xGame.VoiceMaleSix">Male 6</option>
+                    <option value="xGame.VoiceMaleSeven">Male 7</option>
+                    <option value="xGame.VoiceMaleEight">Male 8</option>
+                  </optgroup>
+                  <optgroup label="Female">
+                    <option value="xGame.VoiceFemaleOne">Female 1</option>
+                    <option value="xGame.VoiceFemaleTwo">Female 2</option>
+                    <option value="xGame.VoiceFemaleThree">Female 3</option>
+                    <option value="xGame.VoiceFemaleFour">Female 4</option>
+                  </optgroup>
+                  <optgroup label="Specialty">
+                    <option value="xGame.VoiceRobotOne">Robot</option>
+                    <option value="xGame.VoiceAlienOne">Alien</option>
+                    <option value="xGame.VoiceJuggMaleOne">Juggernaut Male</option>
+                    <option value="xGame.VoiceJuggFemaleOne">Juggernaut Female</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div id="voice-custom" style="display:none; height:100%;">
+                <input type="text" id="f-voice-custom" placeholder="e.g. MyVoicePack.MyVoiceClass" style="height:100%; width:100%;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 03: Combat Profile -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">Combat Profile</span>
+    </div>
+    <div class="section-body">
+
+      <div class="form-grid" style="margin-bottom: 18px;">
+
+        <div class="field">
+          <label>Favorite Weapon
+            <span class="hint">Bot's preferred weapon — also accepts custom package references</span>
+          </label>
+          <select id="f-weapon">
+            <option value="">— select —</option>
+            <option value="xWeapons.ShieldGun">Shield Gun</option>
+            <option value="xWeapons.AssaultRifle">Assault Rifle</option>
+            <option value="xWeapons.BioRifle">Bio Rifle</option>
+            <option value="xWeapons.ShockRifle">Shock Rifle</option>
+            <option value="xWeapons.LinkGun">Link Gun</option>
+            <option value="xWeapons.Minigun">Minigun</option>
+            <option value="xWeapons.FlakCannon">Flak Cannon</option>
+            <option value="xWeapons.RocketLauncher">Rocket Launcher</option>
+            <option value="xWeapons.SniperRifle">Lightning Gun</option>
+            <option value="xWeapons.ClassicSniperRifle">Classic Sniper Rifle</option>
+            <option value="Onslaught.ONSAVRiL">AVRiL (Onslaught)</option>
+            <option value="Onslaught.ONSMineLayer">Mine Layer (Onslaught)</option>
+            <option value="Onslaught.ONSGrenadeLauncher">Grenade Launcher (Onslaught)</option>
+            <option value="xWeapons.Redeemer">Redeemer</option>
+            <option value="xWeapons.Painter">Ion Painter</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Custom Orders
+            <span class="hint">Bot's default position/role</span>
+          </label>
+          <select id="f-customorders">
+            <option value="">— select —</option>
+            <option value="POS_Offense">Offense</option>
+            <option value="POS_Defense">Defense</option>
+            <option value="POS_Roam">Roam</option>
+            <option value="POS_Support">Support</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Reaction Time
+            <span class="hint">How quickly the bot reacts to events</span>
+          </label>
+          <select id="f-reactiontime">
+            <option value="">— select —</option>
+            <option value="-2.0">-2.0 — Slowest</option>
+            <option value="-1.0">-1.0 — Slow</option>
+            <option value="+0.0">+0.0 — Average</option>
+            <option value="+1.0">+1.0 — Fast</option>
+            <option value="+2.0">+2.0 — Fastest</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Team Face
+            <span class="hint">Preferred team colour for team-coloured skins</span>
+          </label>
+          <select id="f-teamface">
+            <option value="">— no preference —</option>
+            <option value="0">0 — Red</option>
+            <option value="1">1 — Blue</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="stat-grid" style="margin-bottom: 16px;">
+        <div class="stat-field">
+          <label>Aggressiveness</label>
+          <input type="number" id="f-aggressiveness" value="0.0" step="0.1" min="0.0" max="1.0" />
+          <span class="stat-range-hint">0.0 to +1.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Combat Style</label>
+          <input type="number" id="f-combatstyle" value="0.0" step="0.1" min="0.0" max="1.0" />
+          <span class="stat-range-hint">0.0 to +1.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Tactics</label>
+          <input type="number" id="f-tactics" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">-2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Strafing Ability</label>
+          <input type="number" id="f-strafing" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">-2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Accuracy</label>
+          <input type="number" id="f-accuracy" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">-2.0 to +2.0</span>
+        </div>
+        <div class="stat-field">
+          <label>Jumpiness</label>
+          <input type="number" id="f-jumpiness" value="0.0" step="0.1" min="-2.0" max="2.0" />
+          <span class="stat-range-hint">-2.0 to +2.0</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" id="f-bjumpy" style="width:auto; padding:0; margin:0;" />
+          bJumpy — enable jumping &amp; trick-jump behaviour
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 04: Character Bio -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">Character Bio / Description</span>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Bio Text
+          <span class="hint">Choose how to specify the character's description</span>
+        </label>
+        <div style="display:flex; gap:8px; align-items:flex-start;">
+          <div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">
+            <button type="button" class="toggle-btn active" id="text-tab-bio" onclick="setTextMode('bio')">Type bio</button>
+            <button type="button" class="toggle-btn" id="text-tab-ref" onclick="setTextMode('ref')">Loc. ref</button>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div id="text-bio">
+              <textarea id="f-text-bio" style="width:100%;" placeholder="Enter the character bio here.&#10;Each new line will become a paragraph break in-game.&#10;You can write naturally — the formatting is handled automatically."></textarea>
+            </div>
+            <div id="text-ref" style="display:none;">
+              <input type="text" id="f-text-ref" style="width:100%;" placeholder="e.g. XPlayers.MercMaleAB" />
+              <span class="stat-range-hint" style="margin-top:4px; display:block;">Output as an unquoted Package.Class reference — no pipes or quotes added.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate -->
+  <div class="output-section">
+    <button class="generate-btn" onclick="generate()">⬛ Generate UPL File</button>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="output-box" id="output-box">
+      <div class="output-toolbar">
+        <span class="output-label">✓ Output Ready</span>
+        <div class="output-actions">
+          <button class="btn-small" onclick="copyText()">Copy</button>
+          <button class="btn-small primary" onclick="downloadFile()">Download .upl</button>
+        </div>
+      </div>
+      <textarea id="output-text" readonly rows="6" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <footer>UT2004 UPL GENERATOR &nbsp;◆&nbsp; DROP INTO UT2004\SYSTEM\</footer>
+
+</div>
+
+<script>
+  // ── Mode toggles ──────────────────────────────────────────────
+  let voiceMode = 'builtin';
+  let textMode = 'bio';
+
+  function setVoiceMode(mode) {
+    voiceMode = mode;
+    document.getElementById('voice-builtin').style.display = mode === 'builtin' ? '' : 'none';
+    document.getElementById('voice-custom').style.display  = mode === 'custom'  ? '' : 'none';
+    document.getElementById('voice-tab-builtin').classList.toggle('active', mode === 'builtin');
+    document.getElementById('voice-tab-custom').classList.toggle('active', mode === 'custom');
+  }
+
+  function setTextMode(mode) {
+    textMode = mode;
+    document.getElementById('text-bio').style.display = mode === 'bio' ? '' : 'none';
+    document.getElementById('text-ref').style.display = mode === 'ref' ? '' : 'none';
+    document.getElementById('text-tab-bio').classList.toggle('active', mode === 'bio');
+    document.getElementById('text-tab-ref').classList.toggle('active', mode === 'ref');
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function fmtNum(n) {
+    const num = parseFloat(n);
+    if (isNaN(num)) return '+0.0';
+    const sign = num >= 0 ? '+' : '';
+    return sign + num.toFixed(1);
+  }
+
+  function bioToUpl(text) {
+    return text
+      .split('\n')
+      .map(l => l.trimEnd())
+      .join('|')
+      .replace(/\|{2,}/g, '||')
+      + '|';
+  }
+
+  // ── Generate ──────────────────────────────────────────────────
+  function generate() {
+    const errorEl  = document.getElementById('error-msg');
+    const outputBox = document.getElementById('output-box');
+    errorEl.classList.remove('visible');
+    outputBox.classList.remove('visible');
+
+    // Mandatory field validation
+    const required = [
+      { id: 'f-name',     label: 'Default Name' },
+      { id: 'f-mesh',     label: 'Mesh' },
+      { id: 'f-species',  label: 'Species' },
+      { id: 'f-bodyskin', label: 'Body Skin' },
+      { id: 'f-faceskin', label: 'Face Skin' },
+      { id: 'f-portrait', label: 'Portrait' },
+      { id: 'f-sex',      label: 'Sex' },
+    ];
+
+    const missing = required.filter(f => !val(f.id)).map(f => f.label);
+
+    if (missing.length > 0) {
+      errorEl.innerHTML = `CRITICAL ERROR: MISSING REQUIRED DATA<br>Please fill in: ${missing.join(', ')}`;
+      errorEl.classList.add('visible');
+      errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    const parts = [];
+
+    parts.push(`DefaultName="${val('f-name')}"`);
+
+    const race = val('f-race');
+    if (race) parts.push(`Race="${race}"`);
+
+    parts.push(`Mesh=${val('f-mesh')}`);
+    parts.push(`species=${val('f-species')}`);
+    parts.push(`BodySkin=${val('f-bodyskin')}`);
+    parts.push(`FaceSkin=${val('f-faceskin')}`);
+    parts.push(`Portrait=${val('f-portrait')}`);
+
+    // Text — bio or localization ref
+    if (textMode === 'bio') {
+      const bioRaw = document.getElementById('f-text-bio').value;
+      if (bioRaw.trim()) parts.push(`Text="${bioToUpl(bioRaw)}"`);
+    } else {
+      const ref = val('f-text-ref');
+      if (ref) parts.push(`Text=${ref}`);
+    }
+
+    // Voice — built-in (Voice=) or custom package (CustomVoice=)
+    if (voiceMode === 'builtin') {
+      const v = val('f-voice-builtin');
+      if (v) parts.push(`Voice=${v}`);
+    } else {
+      const v = val('f-voice-custom');
+      if (v) parts.push(`CustomVoice=${v}`);
+    }
+
+    parts.push(`Sex=${val('f-sex')}`);
+
+    const menu = val('f-menu');
+    if (menu) parts.push(`Menu="${menu}"`);
+
+    const weapon = val('f-weapon');
+    if (weapon) parts.push(`FavoriteWeapon=${weapon}`);
+
+    parts.push(`Aggressiveness=${fmtNum(val('f-aggressiveness'))}`);
+    parts.push(`CombatStyle=${fmtNum(val('f-combatstyle'))}`);
+    parts.push(`Tactics=${fmtNum(val('f-tactics'))}`);
+    parts.push(`StrafingAbility=${fmtNum(val('f-strafing'))}`);
+    parts.push(`Accuracy=${fmtNum(val('f-accuracy'))}`);
+    parts.push(`Jumpiness=${fmtNum(val('f-jumpiness'))}`);
+
+    const reactionTime = val('f-reactiontime');
+    if (reactionTime) parts.push(`ReactionTime=${reactionTime}`);
+
+    const customOrders = val('f-customorders');
+    if (customOrders) parts.push(`CustomOrders=${customOrders}`);
+
+    if (document.getElementById('f-bjumpy').checked) parts.push(`bJumpy=true`);
+
+    const ragdoll = val('f-ragdoll');
+    if (ragdoll) parts.push(`Ragdoll=${ragdoll}`);
+
+    const skeleton = val('f-skeleton');
+    if (skeleton) parts.push(`Skeleton=${skeleton}`);
+
+    const teamFace = val('f-teamface');
+    if (teamFace !== '') parts.push(`TeamFace=${teamFace}`);
+
+    const output = `[Public]\r\nPlayer=(${parts.join(',')})`;
+
+    document.getElementById('output-text').value = output;
+    outputBox.classList.add('visible');
+    outputBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ── Copy / Download ───────────────────────────────────────────
+  function copyText() {
+    const t = document.getElementById('output-text');
+    t.select();
+    navigator.clipboard.writeText(t.value).catch(() => {
+      document.execCommand('copy');
+    });
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--success)';
+    btn.style.borderColor = 'var(--success)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  }
+
+  function downloadFile() {
+    const content = document.getElementById('output-text').value;
+    const name = (document.getElementById('f-name').value.trim() || 'character').replace(/\s+/g, '');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${name}.upl`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Tab key in bio textarea ───────────────────────────────────
+  document.getElementById('f-text-bio').addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = this.selectionStart;
+      this.value = this.value.substring(0, s) + '    ' + this.value.substring(this.selectionEnd);
+      this.selectionStart = this.selectionEnd = s + 4;
+    }
+  });
+</script>
+</body>
+</html>
